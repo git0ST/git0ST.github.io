@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Cybersecurity Meta Tags -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <title>Shivam Thakur | Data Scientist & Operations Analyst</title>
+    
+    <!-- Scripts & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 800: '#292524', 900: '#1c1917' },
+                        kribhco: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857' }
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'hover': '0 20px 40px -20px rgba(5, 150, 105, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #fafaf9; color: #1c1917; overflow-x: hidden; }
+        
+        .ui-card {
+            background: #ffffff;
+            border: 1px solid #e7e5e4;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ui-card:hover {
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            border-color: #d1fae5;
+            transform: translateY(-4px);
+        }
+
+        .exp-tab {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .exp-tab::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: #059669;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: center;
+        }
+        @media (max-width: 1024px) {
+            .exp-tab::before {
+                width: 100%;
+                height: 3px;
+                bottom: 0;
+                top: auto;
+                transform: scaleX(0);
+                transform-origin: left;
+            }
+            .exp-tab.active::before { transform: scaleX(1); }
+        }
+        .exp-tab.active {
+            background-color: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+        .exp-tab.active::before { transform: scaleY(1); }
+        @media (max-width: 1024px) { .exp-tab.active::before { transform: scaleX(1); } }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .chart-wrapper { position: relative; width: 100%; height: 280px; }
+
+        .img-glow::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            background: linear-gradient(to bottom right, #10b981, transparent);
+            filter: blur(20px);
+            opacity: 0.15;
+            z-index: -1;
+            border-radius: inherit;
+        }
+
+        .modal-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f5f5f4; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #059669; }
+    </style>
+</head>
+<body class="antialiased selection:bg-kribhco-100 selection:text-kribhco-700">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-stone-200 transition-all">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center h-20">
+            <a href="#" class="font-serif font-bold text-2xl tracking-tight text-stone-900 z-50">ST.</a>
+            
+            <div class="hidden md:flex gap-8 text-sm font-medium text-stone-500 items-center">
+                <a href="#experience" class="hover:text-kribhco-600 transition-colors">Experience</a>
+                <a href="#projects" class="hover:text-kribhco-600 transition-colors">Case Studies</a>
+                <a href="#growth" class="hover:text-kribhco-600 transition-colors">Capabilities</a>
+                <a href="#ai-pitch" class="px-5 py-2.5 bg-stone-900 text-white text-sm font-medium rounded-lg hover:bg-kribhco-600 transition-colors flex items-center gap-2 shadow-md">
+                    <span>&#10024;</span> AI Assistant
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle Button (Unicode) -->
+            <button id="mobileMenuBtn" class="md:hidden text-stone-900 focus:outline-none z-50 p-2 text-2xl leading-none">
+                &#9776;
+            </button>
+        </div>
+
+        <div id="mobileMenu" class="md:hidden absolute top-20 left-0 w-full bg-white border-b border-stone-200 shadow-xl flex-col hidden">
+            <a href="#experience" class="p-5 text-center border-b border-stone-100 text-stone-600 font-medium hover:bg-stone-50" onclick="toggleMobileMenu()">Experience</a>
+            <a href="#projects" class="p-5 text-center border-b border-stone-100 text-stone-600 font-medium hover:bg-stone-50" onclick="toggleMobileMenu()">Case Studies</a>
+            <a href="#growth" class="p-5 text-center border-b border-stone-100 text-stone-600 font-medium hover:bg-stone-50" onclick="toggleMobileMenu()">Capabilities</a>
+            <a href="#ai-pitch" class="p-5 text-center bg-stone-900 text-white font-medium flex justify-center items-center gap-2" onclick="toggleMobileMenu()">
+                <span>&#10024;</span> AI Assistant
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-24 md:pt-28 pb-16 md:pb-20">
+        
+        <!-- Hero Section -->
+        <section class="px-6 md:px-12 max-w-7xl mx-auto min-h-[85vh] flex flex-col justify-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 items-center">
+                
+                <div class="lg:col-span-7 space-y-6 reveal active mt-8 md:mt-0 order-2 lg:order-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-200 text-stone-600 text-xs font-semibold tracking-wide uppercase w-fit">
+                        <span class="w-2 h-2 rounded-full bg-kribhco-500 animate-pulse"></span>
+                        Data Scientist & Operations Analyst
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stone-900 leading-[1.15] md:leading-[1.1] tracking-tight">
+                        Translating complex data into <br>
+                        <span class="text-kribhco-600 italic">scalable operations.</span>
+                    </h1>
+                    
+                    <p class="text-base md:text-lg text-stone-600 leading-relaxed max-w-2xl font-light">
+                        I am <strong class="font-semibold text-stone-900">Shivam Thakur</strong>. I combine a deep technical foundation in predictive analytics and data architecture with a relentless drive to optimize physical supply chains and enterprise workflows. My goal is continuous growth through high-impact problem solving.
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center gap-4 pt-2 md:pt-4">
+                        <a href="#experience" class="px-6 md:px-8 py-3.5 bg-kribhco-600 text-white font-medium rounded-lg hover:bg-kribhco-700 transition-all shadow-md hover:shadow-hover w-full sm:w-auto text-center">
+                            Explore My Approach
+                        </a>
+                        <div class="flex items-center gap-2 text-stone-400 w-full sm:w-auto justify-center sm:justify-start">
+                            <a href="https://linkedin.com/in/data-thakur/" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-lg border border-stone-200 bg-white flex items-center justify-center hover:border-kribhco-500 hover:text-kribhco-600 transition-all text-lg" title="LinkedIn Profile">&#128279;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative reveal active order-1 lg:order-2">
+                    <div class="relative w-full max-w-[280px] sm:max-w-md mx-auto aspect-[4/5] rounded-2xl img-glow bg-white p-2 border border-stone-100 shadow-premium">
+                        <!-- Use fallback image handling for robust rendering -->
+                        <img src="BetterPic-Export-3eb94063-23b7-461d-9a87-bad76efae947-image-34.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Shivam+Thakur&background=059669&color=fff&size=512&font-size=0.33'" alt="Shivam Thakur" class="w-full h-full object-cover rounded-xl filter grayscale hover:grayscale-0 transition-all duration-700">
+                        
+                        <div class="absolute -bottom-4 -left-4 sm:-bottom-5 sm:-left-5 bg-white p-3 sm:p-4 rounded-xl border border-stone-100 shadow-lg flex items-center gap-2 sm:gap-3">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-kribhco-50 text-kribhco-600 flex items-center justify-center text-base sm:text-lg">&#128200;</div>
+                            <div>
+                                <p class="text-[8px] sm:text-[10px] text-stone-400 font-bold uppercase tracking-wider">Foundation</p>
+                                <p class="text-stone-900 font-bold text-xs sm:text-sm">MS Engineering Mgmt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Strip -->
+        <section class="border-y border-stone-200 bg-white py-8 md:py-10 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center divide-x-0 md:divide-x divide-y md:divide-y-0 divide-stone-100">
+                <div class="reveal py-2 md:py-0">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-1">$58K+</div>
+                    <div class="text-[9px] sm:text-[10px] font-bold text-stone-400 tracking-widest uppercase">Verified Cost Reductions</div>
+                </div>
+                <div class="reveal py-2 md:py-0 border-l border-stone-100 md:border-l-0">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-1">4.5M+</div>
+                    <div class="text-[9px] sm:text-[10px] font-bold text-stone-400 tracking-widest uppercase">Database Records Optimized</div>
+                </div>
+                <div class="reveal py-2 md:py-0 border-t border-stone-100 md:border-t-0">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-1">3+ Yrs</div>
+                    <div class="text-[9px] sm:text-[10px] font-bold text-stone-400 tracking-widest uppercase">Analytics & MLOps Exposure</div>
+                </div>
+                <div class="reveal py-2 md:py-0 border-t border-l border-stone-100 md:border-t-0 md:border-l-0">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-1">&#8734;</div>
+                    <div class="text-[9px] sm:text-[10px] font-bold text-kribhco-600 tracking-widest uppercase">Capacity for Growth</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Experience Section -->
+        <section id="experience" class="py-16 md:py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+            <div class="mb-8 md:mb-12 reveal">
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-stone-900 mb-3 md:mb-4">Operational Deep Dives</h2>
+                <p class="text-stone-500 text-sm md:text-base max-w-2xl leading-relaxed">My career is driven by applying rigorous data science methodologies to physical supply chains and business logistics. I view every role as an opportunity to expand my operational expertise.</p>
+            </div>
+
+            <div class="ui-card flex flex-col lg:flex-row overflow-hidden reveal">
+                
+                <!-- Swipeable Tabs -->
+                <div class="lg:w-1/3 bg-stone-50 border-b lg:border-b-0 lg:border-r border-stone-200 flex flex-row lg:flex-col overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+                    
+                    <button class="exp-tab active min-w-[70%] sm:min-w-[40%] lg:min-w-full snap-start text-left p-4 sm:p-6 border-r lg:border-r-0 lg:border-b border-stone-200 focus:outline-none" onclick="switchRole(0)">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] sm:text-xs font-bold text-kribhco-600">Mar 2026 - Present</span>
+                            <h4 class="font-bold text-stone-900 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">ABC Corporation</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis">Data Analyst, Import Operations</p>
+                        </div>
+                    </button>
+
+                    <button class="exp-tab min-w-[70%] sm:min-w-[40%] lg:min-w-full snap-start text-left p-4 sm:p-6 border-r lg:border-r-0 lg:border-b border-stone-200 focus:outline-none" onclick="switchRole(1)">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] sm:text-xs font-bold text-stone-400">2025 - 2026</span>
+                            <h4 class="font-bold text-stone-900 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">Prime Commodities</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis">Operations Analyst</p>
+                        </div>
+                    </button>
+
+                    <button class="exp-tab min-w-[70%] sm:min-w-[40%] lg:min-w-full snap-start text-left p-4 sm:p-6 border-r lg:border-r-0 lg:border-b border-stone-200 focus:outline-none" onclick="switchRole(2)">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] sm:text-xs font-bold text-stone-400">2024 - 2025</span>
+                            <h4 class="font-bold text-stone-900 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">Reliance Jio USA</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis">AI Intern</p>
+                        </div>
+                    </button>
+
+                    <button class="exp-tab min-w-[70%] sm:min-w-[40%] lg:min-w-full snap-start text-left p-4 sm:p-6 border-r lg:border-r-0 lg:border-b border-stone-200 focus:outline-none" onclick="switchRole(3)">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] sm:text-xs font-bold text-stone-400">2022 - 2023</span>
+                            <h4 class="font-bold text-stone-900 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">Northeastern Univ</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis">Data Analyst (ETL)</p>
+                        </div>
+                    </button>
+
+                    <button class="exp-tab min-w-[70%] sm:min-w-[40%] lg:min-w-full snap-start text-left p-4 sm:p-6 focus:outline-none border-r border-transparent" onclick="switchRole(4)">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] sm:text-xs font-bold text-stone-400">2018 - 2019</span>
+                            <h4 class="font-bold text-stone-900 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">CNH Industrial</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis">Production Analytics</p>
+                        </div>
+                    </button>
+
+                </div>
+
+                <!-- Right Content -->
+                <div class="lg:w-2/3 p-6 sm:p-8 md:p-10 bg-white flex flex-col justify-between">
+                    <div id="role-content" class="transition-opacity duration-300">
+                        <div class="mb-4 md:mb-6">
+                            <h3 class="text-xl md:text-2xl font-bold text-stone-900 mb-1" id="role-title">Data Analyst, Import Operations</h3>
+                            <p class="text-kribhco-600 font-medium text-xs md:text-sm" id="role-company">ABC Corporation</p>
+                        </div>
+                        
+                        <ul class="space-y-3 text-stone-600 text-sm leading-relaxed mb-8 md:mb-10" id="role-bullets">
+                            <!-- JS Inject -->
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto border-t border-stone-100 pt-6">
+                        <div class="flex justify-between items-end mb-4">
+                            <h4 class="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest" id="chart-title">Forecasting Model Baseline Accuracy</h4>
+                        </div>
+                        <div class="chart-wrapper h-48 md:h-[280px]">
+                            <canvas id="experienceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Case Studies Section -->
+        <section id="projects" class="py-16 md:py-24 bg-stone-50 border-y border-stone-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
+                <div class="mb-8 md:mb-12 reveal">
+                    <h2 class="font-serif text-3xl md:text-4xl font-bold text-stone-900 mb-3 md:mb-4">Technical Case Studies</h2>
+                    <p class="text-stone-500 text-sm md:text-base max-w-2xl leading-relaxed">A look at how I frame problems, navigate imperfect data, and build scalable solutions. These projects reflect my capacity to learn and deploy analytical frameworks effectively.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    
+                    <!-- CV Project -->
+                    <div class="ui-card p-6 md:p-8 flex flex-col reveal">
+                        <div class="flex justify-between items-start mb-4 md:mb-6">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2.5 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">TensorFlow</span>
+                                <span class="px-2.5 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">Flask API</span>
+                            </div>
+                            <span class="text-xs text-stone-400 font-mono hidden sm:block">Healthcare AI</span>
+                        </div>
+                        
+                        <h3 class="text-lg md:text-xl font-bold text-stone-900 mb-2 md:mb-3">Retinal Disease Classification</h3>
+                        <p class="text-stone-500 text-xs md:text-sm mb-6 leading-relaxed flex-grow">Designed to address high false-positive rates in medical imaging. Fine-tuned a ResNet-50 architecture to classify 15K OCT samples, prioritizing recall and robustness against image noise.</p>
+                        
+                        <div class="chart-wrapper h-32 md:h-40 mb-6 border-y border-stone-100 py-4">
+                            <canvas id="cvChart"></canvas>
+                        </div>
+                        
+                        <div class="flex items-center mt-auto">
+                            <button onclick="openCaseStudy('cv')" class="px-4 py-2.5 bg-stone-900 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-kribhco-600 transition-colors shadow-md w-full text-center">
+                                Open Case Study
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Risk Project -->
+                    <div class="ui-card p-6 md:p-8 flex flex-col reveal">
+                        <div class="flex justify-between items-start mb-4 md:mb-6">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2.5 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">Monte Carlo</span>
+                                <span class="px-2.5 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">Python Analytics</span>
+                            </div>
+                            <span class="text-xs text-stone-400 font-mono hidden sm:block">FinTech</span>
+                        </div>
+                        
+                        <h3 class="text-lg md:text-xl font-bold text-stone-900 mb-2 md:mb-3">Portfolio Risk Simulation</h3>
+                        <p class="text-stone-500 text-xs md:text-sm mb-6 leading-relaxed flex-grow">Aimed at mitigating blind spots in volatile markets. Engineered a stochastic simulation engine to forecast Value at Risk (VaR) across multi-asset portfolios during severe market downturns.</p>
+                        
+                        <div class="chart-wrapper h-32 md:h-40 mb-6 border-y border-stone-100 py-4">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                        
+                        <div class="flex items-center mt-auto">
+                            <button onclick="openCaseStudy('risk')" class="px-4 py-2.5 bg-stone-900 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-kribhco-600 transition-colors shadow-md w-full text-center">
+                                Open Case Study
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Capstone Project -->
+                <div class="mt-6 md:mt-8 ui-card p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-10 items-center reveal">
+                    <div class="md:w-1/2">
+                        <div class="flex flex-wrap gap-2 mb-3 md:mb-4">
+                            <span class="px-3 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">R&D / Physical Engineering</span>
+                        </div>
+                        <h3 class="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-stone-900 mb-3 md:mb-4">Sustainable Material Dev</h3>
+                        <p class="text-stone-600 text-xs md:text-sm leading-relaxed mb-6">Prototyped eco-friendly fiberglass tiles from recycled plastics. The project required rigorous optimization of molding temperatures to balance extreme cost-reduction constraints against physical durability requirements.</p>
+                        <div class="flex gap-4 items-center">
+                            <button onclick="openCaseStudy('capstone')" class="px-5 py-2.5 w-full sm:w-auto bg-stone-900 text-white text-xs md:text-sm font-semibold rounded-lg hover:bg-kribhco-600 transition-colors shadow-md text-center">
+                                Open Case Study
+                            </button>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 w-full chart-wrapper h-48 border-t md:border-t-0 md:border-l border-stone-200 pt-6 md:pt-0 md:pl-10">
+                        <canvas id="capstoneChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Growth & AI Pitch -->
+        <section id="growth" class="py-16 md:py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                
+                <!-- Skills/Growth Radar -->
+                <div class="ui-card p-6 md:p-10 flex flex-col reveal">
+                    <h2 class="font-serif text-2xl md:text-3xl font-bold text-stone-900 mb-2">Capabilities Matrix</h2>
+                    <p class="text-xs md:text-sm text-stone-500 mb-6 md:mb-8">Visualizing my current expertise against the areas I am actively learning and scaling to solve broader business challenges.</p>
+                    
+                    <div class="flex-grow flex items-center justify-center chart-wrapper" style="height: 300px;">
+                        <canvas id="skillsRadar"></canvas>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-stone-100 pt-6">
+                        <div>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Established Base</p>
+                            <p class="text-[11px] md:text-xs text-stone-600 font-medium">Python, SQL, Tableau, Pandas, Predictive Modeling, ETL</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-kribhco-600 uppercase tracking-widest mb-1.5">Actively Scaling</p>
+                            <p class="text-[11px] md:text-xs text-stone-600 font-medium">Enterprise Supply Chain Analytics, Advanced MLOps, Airflow</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Value Proposition -->
+                <div class="ui-card p-6 md:p-10 bg-stone-900 text-white flex flex-col justify-center reveal relative overflow-hidden" id="ai-pitch">
+                    <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-kribhco-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="inline-flex items-center gap-2 mb-4 md:mb-6 text-kribhco-500 text-[10px] md:text-xs font-bold uppercase tracking-wider">
+                            <span class="text-base md:text-lg">&#10024;</span> Interactive Value Proposition
+                        </div>
+                        <h2 class="font-serif text-2xl md:text-3xl font-bold mb-2 md:mb-3">How can I help your team?</h2>
+                        <p class="text-stone-400 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed">
+                            Rather than a generic cover letter, let's talk about solutions. Describe your team's biggest operational bottleneck below. My AI will analyze my background to explain how I am equipped to help you solve it.
+                        </p>
+
+                        <div class="mb-6">
+                            <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2" for="challengeInput">Your Main Operational Challenge</label>
+                            <textarea id="challengeInput" rows="3" placeholder="e.g. 'We need to reduce customs clearance times and optimize messy data pipelines...'" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-stone-600 focus:outline-none focus:border-kribhco-500 transition-colors text-sm resize-none"></textarea>
+                        </div>
+                        
+                        <button id="generatePitchBtn" class="w-full py-3.5 bg-kribhco-600 text-white font-semibold rounded-lg hover:bg-kribhco-500 transition-colors shadow-lg text-sm">
+                            Analyze Solution Fit
+                        </button>
+                        
+                        <!-- Added whitespace-pre-line for sanitized text injection security -->
+                        <div id="pitchOutput" class="mt-6 p-4 md:p-5 bg-white/5 rounded-lg border border-white/10 hidden text-xs md:text-sm leading-relaxed text-stone-300 italic whitespace-pre-line">
+                            <!-- Output injected securely via JS textContent -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-stone-200 py-8 md:py-10 mt-6 md:mt-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs md:text-sm text-stone-500">
+            <div class="font-serif font-bold text-stone-900 text-lg md:text-xl tracking-tight">ST.</div>
+            <p class="text-center md:text-left">&copy; 2026 Shivam Thakur. Continuous learning. Scalable impact.</p>
+            <div class="flex gap-4">
+                <a href="https://linkedin.com/in/data-thakur/" target="_blank" rel="noopener noreferrer" class="hover:text-kribhco-600 transition-colors">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Case Study Modal System -->
+    <div id="caseStudyModal" class="fixed inset-0 z-[100] modal-overlay flex items-center justify-center p-4 sm:p-6" aria-modal="true" role="dialog">
+        <div class="absolute inset-0 bg-stone-900/40" onclick="closeModal()"></div>
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto modal-content relative shadow-2xl border border-stone-100 hide-scrollbar">
+            <div class="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-stone-100 px-5 py-4 flex justify-between items-center z-10">
+                <h3 class="font-serif font-bold text-lg md:text-xl text-stone-900 pr-4" id="modalTitle">Case Study</h3>
+                <button onclick="closeModal()" aria-label="Close modal" class="w-8 h-8 shrink-0 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-900 flex items-center justify-center transition-colors">
+                    &#10005;
+                </button>
+            </div>
+            <div class="p-5 md:p-8 space-y-6 md:space-y-8" id="modalBody">
+                <!-- Injected via DOM elements for security -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+        }
+
+        // Chart Config
+        Chart.defaults.font.family = '"Inter", sans-serif';
+        Chart.defaults.color = '#78716c'; 
+        Chart.defaults.scale.grid.color = '#f5f5f4';
+        const isMobile = window.innerWidth < 768;
+        Chart.defaults.font.size = isMobile ? 10 : 12;
+
+        // Realistic, Methodical Experience Data
+        const experienceData = [
+            {
+                title: "Data Analyst, Import Operations",
+                company: "ABC Corporation",
+                bullets: [
+                    "Mapping out existing import documentation workflows and identifying data silos to lay the groundwork for streamlined cross-border logistics.",
+                    "Assisting in the development of baseline forecasting models for commodity pricing to support the procurement team's strategic planning.",
+                    "Auditing and refining data entry protocols for customs compliance, establishing a foundation for accurate regulatory reporting."
+                ],
+                chartTitle: "Forecasting Model Baseline Accuracy (%)",
+                chartType: 'line',
+                chartData: {
+                    labels: ['Month 1', 'Month 2', 'Month 3', 'Current'],
+                    datasets: [{
+                        label: 'Model Accuracy (%)',
+                        data: [65, 68, 72, 75],
+                        borderColor: '#059669', backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                        borderWidth: isMobile ? 2 : 3, tension: 0.4, fill: true, pointBackgroundColor: '#059669', pointRadius: isMobile ? 3 : 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 50, max: 100 } } }
+            },
+            {
+                title: "Operations Analyst",
+                company: "Prime Commodities Pvt Ltd",
+                bullets: [
+                    "Consolidated fragmented import data into centralized tracking dashboards, helping operations identify bottlenecks and progressively reduce clearance delays.",
+                    "Tracked vendor performance metrics and logistics data to provide early warnings on potential freight delays and supply chain risks.",
+                    "Transitioned manual daily logistics reporting into automated workflows, improving data visibility for cross-functional stakeholders."
+                ],
+                chartTitle: "Avg Customs Clearance Time (Days)",
+                chartType: 'bar',
+                chartData: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Avg Lead Time (Days)',
+                        data: [14, 13, 11, 10],
+                        backgroundColor: '#1c1917', borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            },
+            {
+                title: "Artificial Intelligence Intern",
+                company: "Reliance Jio Infocomm USA",
+                bullets: [
+                    "Spearheaded GTM strategy acceleration by evaluating 15+ SaaS AI platforms, defining critical product requirement alignments.",
+                    "Deployed NLP-driven CRM automation across 5 business cohorts, successfully reducing customer support ticket volumes by 12%.",
+                    "Engineered robust Python validation scripts (pandas, NumPy), eliminating manual bottlenecks and reducing data processing errors by 8%."
+                ],
+                chartTitle: "CRM NLP Automation Impact",
+                chartType: 'bar',
+                chartData: {
+                    labels: ['Before NLP', 'After NLP'],
+                    datasets: [{ label: 'Avg Support Tickets', data: [100, 88], backgroundColor: ['#d6d3d1', '#059669'], borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            },
+            {
+                title: "Data Analyst (ETL & Analytics)",
+                company: "Northeastern University",
+                bullets: [
+                    "Engineered scalable ETL pipelines in SQL and Talend to migrate 4.5M+ records, boosting overall workflow efficiency by 20%.",
+                    "Built logistic regression models to segment 70K+ prospects, driving a 17% increase in enrollment conversion speed.",
+                    "Integrated CI/CD practices with Great Expectations, automating data quality checks and reducing onboarding latency by two weeks."
+                ],
+                chartTitle: "Pipeline Processing Efficiency",
+                chartType: 'line',
+                chartData: {
+                    labels: ['M1', 'M2', 'M3', 'M4'],
+                    datasets: [{ label: 'Efficiency Index', data: [100, 108, 115, 120], borderColor: '#1c1917', borderWidth: isMobile ? 2 : 3, tension: 0.4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            },
+            {
+                title: "Production Analytics Intern",
+                company: "CNH Industrial Ltd.",
+                bullets: [
+                    "Delivered $58K in annual savings by designing predictive maintenance algorithms for 6-axis KUKA welding robots.",
+                    "Validated an 11.3:1 ROI on process upgrades through rigorous statistical analysis of 14M+ production records via Minitab.",
+                    "Eliminated redundant QA checks using Lean methodologies, reducing equipment downtime by 10% while sustaining 99.4% weld integrity."
+                ],
+                chartTitle: "ROI Validation Analytics ($58K Saved)",
+                chartType: 'doughnut',
+                chartData: {
+                    labels: ['Verified Savings', 'Base Cost'],
+                    datasets: [{ data: [58, 142], backgroundColor: ['#059669', '#f5f5f4'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right' } } }
+            }
+        ];
+
+        let expChartInstance = null;
+
+        function switchRole(index) {
+            const tabs = document.querySelectorAll('.exp-tab');
+            tabs.forEach((tab, i) => {
+                if(i === index) {
+                    tab.classList.add('active');
+                    tab.querySelector('span').classList.replace('text-stone-400', 'text-kribhco-600');
+                    if(isMobile) {
+                        tab.parentElement.scrollTo({ left: tab.offsetLeft - 16, behavior: 'smooth' });
+                    }
+                } else {
+                    tab.classList.remove('active');
+                    tab.querySelector('span').classList.replace('text-kribhco-600', 'text-stone-400');
+                }
+            });
+
+            const data = experienceData[index];
+            const contentDiv = document.getElementById('role-content');
+            
+            contentDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Using textContent for DOM security
+                document.getElementById('role-title').textContent = data.title;
+                document.getElementById('role-company').textContent = data.company;
+                
+                const ul = document.getElementById('role-bullets');
+                ul.innerHTML = ''; // Clear prior safe bullets
+                data.bullets.forEach(b => {
+                    const li = document.createElement('li');
+                    li.className = 'flex gap-2.5 md:gap-3';
+                    
+                    const spanIcon = document.createElement('span');
+                    spanIcon.className = 'text-kribhco-500 mt-1 text-[10px] md:text-xs';
+                    spanIcon.innerHTML = '&#11044;'; // Safe Unicode dot
+                    
+                    const spanText = document.createElement('span');
+                    spanText.textContent = b; // Secure injection
+                    
+                    li.appendChild(spanIcon);
+                    li.appendChild(spanText);
+                    ul.appendChild(li);
+                });
+
+                document.getElementById('chart-title').textContent = data.chartTitle;
+
+                if (expChartInstance) expChartInstance.destroy();
+                const ctx = document.getElementById('experienceChart').getContext('2d');
+                expChartInstance = new Chart(ctx, { type: data.chartType, data: data.chartData, options: data.options });
+
+                contentDiv.style.opacity = '1';
+            }, 200);
+        }
+
+        // --- CASE STUDY MODAL LOGIC (Secure rendering) ---
+        const caseStudiesData = {
+            cv: {
+                title: "Deep Dive: Retinal Disease Classification",
+                challenge: "The core challenge was not just building a model, but dealing with severe class imbalances inherent to real-world medical data. False positives had to be strictly minimized without missing critical diagnoses.",
+                approach: "Instead of training from scratch, I applied transfer learning using a pre-trained ResNet-50 architecture. I countered the imbalance through targeted data augmentation (rotations, zooming). To ensure the model was actually useful beyond a notebook, I containerized the final inference script into a Flask API.",
+                learnings: "This project taught me that data preparation and architectural decisions (like augmentation and thresholding) often dictate success more than the algorithm itself. It also gave me practical exposure to deploying analytical logic into real-world systems."
+            },
+            risk: {
+                title: "Deep Dive: Portfolio Risk Simulation Engine",
+                challenge: "Relying purely on historical averages fails to capture true risk during market crashes. I needed to build a framework capable of modeling unpredictable, non-linear behaviors to estimate potential maximum operational/financial losses.",
+                approach: "I engineered a Python simulation engine running 10,000+ Monte Carlo iterations across varied datasets. By calculating the Value at Risk (VaR) from these distributions, I provided a quantifiable metric for worst-case scenarios.",
+                learnings: "I gained hands-on experience with stochastic modeling and time-series data structures. More importantly, I learned how to translate complex statistical variance into clear, actionable business metrics for operational stakeholders."
+            },
+            capstone: {
+                title: "Deep Dive: Sustainable Materials Optimization",
+                challenge: "Developing fiberglass tiles from recycled plastics usually results in products that are either structurally weak or financially unviable to scale. The challenge was finding the exact mathematical threshold balancing both.",
+                approach: "I led a highly iterative R&D process. By mapping an experimental matrix against stress-test data, we continuously optimized molding temperature and pressure. We utilized controlled porosity engineering to ensure water resistance without increasing material costs.",
+                learnings: "This was a masterclass in optimization under physical and budgetary constraints. It deeply informed my approach to operational analytics: realizing that data models must ultimately translate into physical supply chain viability and cost efficiency."
+            }
+        };
+
+        function openCaseStudy(projectId) {
+            const data = caseStudiesData[projectId];
+            document.getElementById('modalTitle').textContent = data.title;
+            
+            const bodyHtml = `
+                <div>
+                    <h4 class="text-[10px] md:text-xs font-bold text-kribhco-600 uppercase tracking-widest mb-2">The Operational Challenge</h4>
+                    <p class="text-xs md:text-sm text-stone-600 leading-relaxed safe-challenge"></p>
+                </div>
+                <div>
+                    <h4 class="text-[10px] md:text-xs font-bold text-kribhco-600 uppercase tracking-widest mb-2">My Analytical Approach</h4>
+                    <p class="text-xs md:text-sm text-stone-600 leading-relaxed safe-approach"></p>
+                </div>
+                <div class="bg-stone-50 p-4 md:p-5 rounded-xl border border-stone-200">
+                    <h4 class="text-[10px] md:text-xs font-bold text-stone-900 uppercase tracking-widest mb-2 flex items-center gap-2"><span class="text-kribhco-500">&#10024;</span> Key Growth Learnings</h4>
+                    <p class="text-xs md:text-sm text-stone-700 leading-relaxed italic safe-learnings"></p>
+                </div>
+            `;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = bodyHtml;
+            
+            // Inject text safely after HTML structure is set
+            modalBody.querySelector('.safe-challenge').textContent = data.challenge;
+            modalBody.querySelector('.safe-approach').textContent = data.approach;
+            modalBody.querySelector('.safe-learnings').textContent = data.learnings;
+            
+            document.getElementById('caseStudyModal').classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeModal() {
+            document.getElementById('caseStudyModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+
+        // Chart Initializations
+        document.addEventListener("DOMContentLoaded", () => {
+            switchRole(0);
+
+            new Chart(document.getElementById('cvChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: ['Accuracy', 'F1', 'Precision'], datasets: [{ label: 'Performance', data: [89, 87, 85], backgroundColor: '#1c1917', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { min: 50, max: 100 } } }
+            });
+
+            new Chart(document.getElementById('riskChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: ['C1', 'C2', 'C3'], datasets: [{ label: 'Accuracy', data: [88, 90, 92], borderColor: '#059669', backgroundColor: 'rgba(5, 150, 105, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { min: 80, max: 100 } } }
+            });
+
+            new Chart(document.getElementById('capstoneChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: ['Material Cost Saved', 'Remaining Cost'], datasets: [{ data: [85, 15], backgroundColor: ['#059669', '#f5f5f4'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: isMobile ? 'bottom' : 'right' } } }
+            });
+
+            new Chart(document.getElementById('skillsRadar').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['Data Analytics', 'Python/ML', 'SQL/ETL', 'Supply Chain Ops', 'Cloud/GCP', 'Strategy/ROI'],
+                    datasets: [
+                        { label: 'Solid Foundation', data: [88, 85, 88, 80, 70, 85], backgroundColor: 'rgba(5, 150, 105, 0.2)', borderColor: '#059669', pointBackgroundColor: '#059669', borderWidth: 2 },
+                        { label: 'Active Learning Target', data: [95, 95, 95, 95, 95, 95], backgroundColor: 'rgba(28, 25, 23, 0.05)', borderColor: '#d6d3d1', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { min: 40, max: 100, ticks: { display: false }, grid: { color: '#f5f5f4' }, angleLines: { color: '#f5f5f4' }, pointLabels: { font: { size: isMobile ? 9 : 11 } } } },
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: isMobile ? 10 : 12 } } } }
+                }
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+
+        // Gemini API Configuration
+        const apiKey = ""; // API key is safely injected at runtime in the execution environment
+
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let retries = 0;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            while (retries < maxRetries) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (retries === maxRetries - 1) throw error;
+                    await new Promise(resolve => setTimeout(resolve, delays[retries]));
+                    retries++;
+                }
+            }
+        }
+
+        async function callGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemInstruction }] } };
+            const result = await fetchWithRetry(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            return result.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to generate response at this time.";
+        }
+
+        document.getElementById('generatePitchBtn')?.addEventListener('click', async () => {
+            const challenge = document.getElementById('challengeInput').value.trim();
+            const btn = document.getElementById('generatePitchBtn');
+            const outputDiv = document.getElementById('pitchOutput');
+            
+            if (!challenge) {
+                // Using textContent for XSS protection
+                outputDiv.textContent = "⚠️ Please enter an operational challenge to allow the AI to map a solution.";
+                outputDiv.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-pulse">Analyzing Operational Challenge...</span>`;
+            outputDiv.innerHTML = `<span class="animate-pulse text-kribhco-500">Evaluating your requirements against Shivam's experience matrix...</span>`;
+            outputDiv.classList.remove('hidden');
+
+            const systemPrompt = `You are Shivam Thakur, a Data Scientist & Operations Analyst. You have an MS in Engineering Management. Key wins: Handled daily import operations at ABC Corp & Prime Commodities. Generated $58K savings via predictive maintenance at CNH. Handled 4.5M record ETL pipelines. 
+            Tone constraint: You must sound highly competent, analytical, and relatable. Express a strong growth mindset, showing you are eager to learn, adapt, and tackle this specific challenge. Write a concise, 3-sentence consultative pitch addressing the user.`;
+            
+            const userPrompt = `A hiring manager or team lead is facing this specific operational challenge: "${challenge}". Write a custom pitch explaining how my specific background in data analytics and physical operations makes me equipped to help solve this, and highlight my excitement to dive in and learn their proprietary systems to scale a solution.`;
+
+            try {
+                const pitch = await callGemini(userPrompt, systemPrompt);
+                // Secure Injection: Utilizing textContent instead of innerHTML to prevent Cross-Site Scripting (XSS).
+                // The CSS property 'whitespace-pre-line' ensures the formatting handles newlines safely.
+                outputDiv.textContent = `"${pitch}"`;
+            } catch (error) {
+                outputDiv.textContent = "Sorry, my AI assistant is currently unavailable. Please reach out via email to discuss this challenge!";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = `Analyze Solution Fit`;
+            }
+        });
+    </script>
+</body>
+</html>
